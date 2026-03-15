@@ -1,0 +1,8 @@
+[submodule "frocksdb"]
+	path = frocksdb
+	url = https://github.com/RyanL123/frocksdb.git
+	branch = quickmrc
+[submodule "flink-justin"]
+	path = flink-justin
+	url = https://github.com/RyanL123/flink-justin.git
+	branch = a4s
