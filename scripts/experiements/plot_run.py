@@ -2,8 +2,8 @@
 """Plot benchmark run metrics from results.
 
 Usage examples:
-  python results/plot_run.py --query q8 --run-id 1771965764000
-  python results/plot_run.py --query q8 --latest
+  python scripts/experiements/plot_run.py --query q8 --run-id 1771965764000
+  python scripts/experiements/plot_run.py --query q8 --latest
 """
 
 from __future__ import annotations
@@ -22,6 +22,9 @@ LOGGER = logging.getLogger(__name__)
 
 
 def parse_args() -> argparse.Namespace:
+    workspace_root_default = Path(__file__).resolve().parents[2]
+    results_root_default = workspace_root_default / "results"
+
     parser = argparse.ArgumentParser(
         description=(
             "Plot one benchmark run as a single image with all available time-series "
@@ -45,8 +48,8 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--results-root",
-        default=str(Path(__file__).resolve().parent),
-        help="Path to results root (defaults to this script's directory).",
+        default=str(results_root_default),
+        help="Path to results root (default: <workspace-root>/results).",
     )
     parser.add_argument(
         "--output",

@@ -47,7 +47,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--workspace-root",
-        default=str(Path(__file__).resolve().parents[1]),
+        default=str(Path(__file__).resolve().parents[2]),
         help="Path to workspace root used as kubectl command cwd.",
     )
     return parser.parse_args()

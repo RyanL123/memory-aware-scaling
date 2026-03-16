@@ -26,6 +26,9 @@ LOGGER = logging.getLogger(__name__)
 
 
 def parse_args() -> argparse.Namespace:
+    workspace_root_default = Path(__file__).resolve().parents[2]
+    results_root_default = workspace_root_default / "results"
+
     parser = argparse.ArgumentParser(
         description="Run one Nexmark query benchmark and save samples, summary, and plot."
     )
@@ -62,15 +65,15 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--results-root",
-        default=str(Path(__file__).resolve().parent),
-        help="Path to results root (default: this script's directory).",
+        default=str(results_root_default),
+        help="Path to results root (default: <workspace-root>/results).",
     )
     parser.add_argument(
         "--workspace-root",
-        default=str(Path(__file__).resolve().parents[1]),
+        default=str(workspace_root_default),
         help=(
             "Path to workspace root containing flink-justin/ and results/ "
-            "(default: parent of this script directory)."
+            "(default: repository root)."
         ),
     )
     parser.add_argument(
@@ -126,12 +129,12 @@ def wait_no_deployment(workspace_root: Path, timeout_sec: int) -> None:
 
 def run_sampler(
     workspace_root: Path,
-    results_root: Path,
     samples_csv: Path,
     duration_sec: int,
     sampling_interval_sec: int,
 ) -> None:
-    sampler_script = results_root / "sampler.py"
+    scripts_dir = Path(__file__).resolve().parent
+    sampler_script = scripts_dir / "sampler.py"
     if not sampler_script.exists():
         raise FileNotFoundError(f"Sampler script not found: {sampler_script}")
     command = [
@@ -245,7 +248,6 @@ def main() -> None:
         shell(f"kubectl apply -f '{manifest}'", workspace_root)
         run_sampler(
             workspace_root=workspace_root,
-            results_root=results_root,
             samples_csv=samples_csv,
             duration_sec=args.duration_sec,
             sampling_interval_sec=args.sampling_interval_sec,
@@ -265,7 +267,7 @@ def main() -> None:
     if args.plot:
         plot_cmd = [
             sys.executable,
-            str(results_root / "plot_run.py"),
+            str(Path(__file__).resolve().parent / "plot_run.py"),
             "--query",
             query,
             "--run-id",
