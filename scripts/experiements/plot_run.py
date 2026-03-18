@@ -19,6 +19,8 @@ from matplotlib.ticker import MultipleLocator
 
 
 LOGGER = logging.getLogger(__name__)
+MEMORY_USED_COLUMN = "total_managed_memory_used_bytes"
+MEMORY_TOTAL_COLUMN = "total_managed_memory_total_bytes"
 
 
 def parse_args() -> argparse.Namespace:
@@ -203,6 +205,20 @@ def build_series(samples: list[dict[str, str]]) -> tuple[list[float], dict[str, 
     return elapsed_seconds, series
 
 
+def build_metric_panels(series: dict[str, list[float]]) -> list[tuple[str, list[str]]]:
+    """Build plot panels as (primary_metric, overlay_metrics)."""
+    panels: list[tuple[str, list[str]]] = []
+    for metric_name in series.keys():
+        if metric_name == MEMORY_TOTAL_COLUMN and MEMORY_USED_COLUMN in series:
+            # Overlay managed total on the existing managed used panel.
+            continue
+        overlays: list[str] = []
+        if metric_name == MEMORY_USED_COLUMN and MEMORY_TOTAL_COLUMN in series:
+            overlays.append(MEMORY_TOTAL_COLUMN)
+        panels.append((metric_name, overlays))
+    return panels
+
+
 def plot_run(
     query: str,
     run_row: dict[str, str],
@@ -212,20 +228,20 @@ def plot_run(
 ) -> None:
     configure_plot_style()
 
-    metric_names = list(series.keys())
+    metric_panels = build_metric_panels(series)
     figure, axes = plt.subplots(
-        nrows=len(metric_names),
+        nrows=len(metric_panels),
         ncols=1,
-        figsize=(12, max(3.8 * len(metric_names), 6.0)),
+        figsize=(12, max(3.8 * len(metric_panels), 6.0)),
         sharex=True,
         constrained_layout=False,
     )
-    if len(metric_names) == 1:
+    if len(metric_panels) == 1:
         axes = [axes]
 
     colors = ["#1f77b4", "#d62728", "#2ca02c", "#9467bd", "#ff7f0e", "#17becf"]
 
-    for i, (ax, metric_name) in enumerate(zip(axes, metric_names)):
+    for i, (ax, (metric_name, overlay_metrics)) in enumerate(zip(axes, metric_panels)):
         raw_values = series[metric_name]
         values, unit = convert_units(metric_name, raw_values)
         label = pretty_metric_label(metric_name)
@@ -238,10 +254,28 @@ def plot_run(
             color=colors[i % len(colors)],
             marker="o",
             markersize=3.5,
+            label=pretty_metric_label(metric_name),
         )
+        all_values = list(values)
+        for offset, overlay_metric in enumerate(overlay_metrics, start=1):
+            overlay_values, _ = convert_units(overlay_metric, series[overlay_metric])
+            all_values.extend(overlay_values)
+            ax.plot(
+                elapsed_seconds,
+                overlay_values,
+                color=colors[(i + offset) % len(colors)],
+                marker="o",
+                markersize=3.5,
+                linestyle="--",
+                label=pretty_metric_label(overlay_metric),
+            )
+
         ax.set_ylabel(label)
-        ymin, ymax = infer_axis_limits(metric_name, values)
+        ymin, ymax = infer_axis_limits(metric_name, all_values)
         ax.set_ylim(ymin, ymax)
+
+        if overlay_metrics:
+            ax.legend(loc="best")
 
         if "slot" in metric_name.lower() and "used" in metric_name.lower():
             ax.yaxis.set_major_locator(MultipleLocator(1.0))

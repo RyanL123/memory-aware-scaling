@@ -147,12 +147,13 @@ def sample_once(
     job_id: str,
     source_vids: list[str],
     source_names: dict[str, str],
-) -> tuple[int, float, float, float]:
+) -> tuple[int, float, float, float, float]:
     ts = int(time.time())
     overview = get_json_via_kubectl_raw(workspace_root, "/overview")
     slots_used = float(int(overview.get("slots-total", 0)) - int(overview.get("slots-available", 0)))
 
     mem_used = 0.0
+    mem_total = 0.0
     for tm in get_json_via_kubectl_raw(workspace_root, "/taskmanagers").get("taskmanagers", []):
         tm_id = tm["id"]
         vals = get_json_via_kubectl_raw(
@@ -163,6 +164,16 @@ def sample_once(
         if vals:
             try:
                 mem_used += float(vals[0]["value"])
+            except Exception:
+                pass
+        vals = get_json_via_kubectl_raw(
+            workspace_root,
+            f"/taskmanagers/{tm_id}/metrics?get=Status.Flink.Memory.Managed.Total",
+            retries=2,
+        )
+        if vals:
+            try:
+                mem_total += float(vals[0]["value"])
             except Exception:
                 pass
 
@@ -216,16 +227,17 @@ def sample_once(
 
     LOGGER.info(
         "[metrics] ts=%s totals source_throughput_records_per_sec=%s "
-        "total_managed_memory_used_bytes=%s total_slots_used=%s",
+        "total_managed_memory_used_bytes=%s total_managed_memory_total_bytes=%s total_slots_used=%s",
         ts,
         throughput,
         mem_used,
+        mem_total,
         slots_used,
     )
-    return ts, throughput, mem_used, slots_used
+    return ts, throughput, mem_used, mem_total, slots_used
 
 
-def write_samples_csv(path: Path, rows: list[tuple[int, float, float, float]]) -> None:
+def write_samples_csv(path: Path, rows: list[tuple[int, float, float, float, float]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.writer(handle)
@@ -234,6 +246,7 @@ def write_samples_csv(path: Path, rows: list[tuple[int, float, float, float]]) -
                 "timestamp_epoch",
                 "source_throughput_records_per_sec",
                 "total_managed_memory_used_bytes",
+                "total_managed_memory_total_bytes",
                 "total_slots_used",
             ]
         )
@@ -261,7 +274,7 @@ def main() -> None:
     wait_rest_ready(workspace_root)
     vids, source_names = get_source_vertex_ids(workspace_root, job_id)
 
-    rows: list[tuple[int, float, float, float]] = []
+    rows: list[tuple[int, float, float, float, float]] = []
     for i in range(sample_count):
         t0 = time.time()
         rows.append(sample_once(workspace_root, job_id, vids, source_names))

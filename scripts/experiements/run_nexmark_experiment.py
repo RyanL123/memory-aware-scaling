@@ -3,7 +3,7 @@
 
 This script:
 1) applies a FlinkDeployment manifest
-2) invokes sampler.py to collect samples
+2) invokes sampler.py to collect samples (throughput, slots, managed memory used/total)
 3) deletes the deployment
 4) appends a normalized summary row to runs.csv
 5) optionally generates a plot via plot_run.py
@@ -17,6 +17,7 @@ import logging
 import re
 import subprocess
 import sys
+import threading
 import time
 from pathlib import Path
 
@@ -162,6 +163,69 @@ def run_sampler(
         raise RuntimeError("sampler.py failed")
 
 
+def start_a4s_decision_collector(
+    workspace_root: Path,
+    run_dir: Path,
+) -> tuple[Path, subprocess.Popen[str] | None, threading.Thread | None]:
+    """Stream operator logs and persist A4S decision lines while the run is active."""
+    decisions_log = run_dir / "a4s_decisions.log"
+    decisions_log.write_text("", encoding="utf-8")
+
+    cmd = [
+        "kubectl",
+        "logs",
+        "deployment/flink-kubernetes-operator",
+        "--all-containers",
+        "-f",
+    ]
+    try:
+        proc = subprocess.Popen(
+            cmd,
+            cwd=workspace_root,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            bufsize=1,
+        )
+    except Exception as exc:  # pragma: no cover - defensive
+        LOGGER.warning("Unable to start A4S decision collector: %s", exc)
+        decisions_log.write_text(
+            "Failed to start live operator log collection.\n",
+            encoding="utf-8",
+        )
+        return decisions_log, None, None
+
+    def _consume() -> None:
+        assert proc.stdout is not None
+        with decisions_log.open("a", encoding="utf-8") as handle:
+            for line in proc.stdout:
+                if "A4S:" in line:
+                    handle.write(line)
+                    handle.flush()
+
+    thread = threading.Thread(target=_consume, name="a4s-decision-collector", daemon=True)
+    thread.start()
+    return decisions_log, proc, thread
+
+
+def stop_a4s_decision_collector(
+    proc: subprocess.Popen[str] | None,
+    thread: threading.Thread | None,
+) -> None:
+    """Stop the background A4S decision collector."""
+    if proc is None:
+        return
+    if proc.poll() is None:
+        proc.terminate()
+        try:
+            proc.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            proc.wait(timeout=10)
+    if thread is not None:
+        thread.join(timeout=5)
+
+
 def append_run_row(runs_csv: Path, row: dict[str, str]) -> None:
     exists = runs_csv.exists()
     existing_rows: list[dict[str, str]] = []
@@ -244,6 +308,12 @@ def main() -> None:
     shell("kubectl delete flinkdeployment flink --ignore-not-found=true", workspace_root, check=False)
     wait_no_deployment(workspace_root, args.cleanup_timeout_sec)
 
+    decisions_log, collector_proc, collector_thread = start_a4s_decision_collector(
+        workspace_root=workspace_root,
+        run_dir=run_dir,
+    )
+    LOGGER.info("Streaming A4S decisions to: %s", decisions_log)
+
     try:
         shell(f"kubectl apply -f '{manifest}'", workspace_root)
         run_sampler(
@@ -255,6 +325,7 @@ def main() -> None:
     finally:
         shell(f"kubectl delete -f '{manifest}'", workspace_root, check=False)
         wait_no_deployment(workspace_root, args.cleanup_timeout_sec)
+        stop_a4s_decision_collector(collector_proc, collector_thread)
 
     if not samples_csv.exists():
         raise FileNotFoundError(f"Sampler did not create expected samples CSV: {samples_csv}")
@@ -281,6 +352,13 @@ def main() -> None:
             LOGGER.error("%s", proc.stdout)
             raise RuntimeError("plot_run.py failed")
         LOGGER.info("%s", proc.stdout.strip())
+
+    if decisions_log.read_text(encoding="utf-8").strip() == "":
+        decisions_log.write_text(
+            "No A4S [Decision]: lines captured during the run.\n",
+            encoding="utf-8",
+        )
+    LOGGER.info("Saved A4S decisions: %s", decisions_log)
 
     LOGGER.info("Saved samples: %s", samples_csv)
     LOGGER.info("Updated runs: %s", runs_csv)
