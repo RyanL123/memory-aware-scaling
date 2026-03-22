@@ -46,8 +46,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--duration-sec",
         type=int,
-        default=600,
-        help="Total sampling duration in seconds (default: 600).",
+        default=1800,
+        help="Total sampling duration in seconds (default: 1800).",
     )
     parser.add_argument(
         "--sampling-interval-sec",
