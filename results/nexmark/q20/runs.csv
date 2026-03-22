@@ -3,3 +3,5 @@ run_id,environment,run_commit,autoscaler,storage
 1773695463818,kind,d94820b,ds2
 1773697676035,kind,d94820b,ds2
 1774054752351,k8s,3aec178,a4s
+1774196172762,k8s,a8de0e9,a4s,ssd
+1774197275798,k8s,fbf8bee,a4s,ssd
