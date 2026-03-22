@@ -1,0 +1,140 @@
+[m[33m2026-03-22 22:30:51,139[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:30:51,139[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:30:51,139[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:30:51,139[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:31:06,304[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:31:06,304[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:31:06,304[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:31:06,304[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:31:21,467[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:31:21,467[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:31:21,468[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:31:21,468[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:31:36,667[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:31:36,667[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:31:36,667[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:31:36,667[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:31:51,889[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:31:51,889[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:31:51,889[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:31:51,889[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:32:07,067[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:32:07,067[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:32:07,068[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:32:07,068[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:32:22,198[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:32:22,198[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:32:22,198[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:32:22,198[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:32:37,341[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:32:37,341[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:32:37,341[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:32:37,341[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:32:52,512[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:32:52,512[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:32:52,512[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:32:52,512[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:33:53,698[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:33:53,698[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:33:53,698[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:33:53,698[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:34:08,860[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:34:08,860[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:34:08,860[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:34:08,861[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:34:23,988[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:34:23,988[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:34:23,988[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:34:23,988[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:34:39,100[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:34:39,100[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:34:39,101[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:34:39,101[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:34:54,239[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:34:54,239[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:34:54,239[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:34:54,239[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:35:09,369[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:35:09,369[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:35:09,369[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:35:09,369[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:35:24,495[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:35:24,495[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:35:24,495[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:35:24,496[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:35:39,619[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:35:39,619[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:35:39,619[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:35:39,619[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:35:54,770[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:35:54,770[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:35:54,770[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:35:54,770[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:37:10,895[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:37:10,895[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:37:10,895[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:37:10,895[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:37:26,033[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:37:26,033[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:37:26,033[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:37:26,033[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:37:41,161[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:37:41,161[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:37:41,161[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:37:41,161[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:37:56,304[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:37:56,304[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:37:56,305[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:37:56,305[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:38:11,466[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:38:11,466[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:38:11,466[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:38:11,466[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:38:26,595[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:38:26,595[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:38:26,595[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:38:26,595[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:38:41,720[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:38:41,720[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:38:41,720[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:38:41,720[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:38:56,831[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:38:56,831[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:38:56,831[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:38:56,831[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:39:11,956[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:39:11,956[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:39:11,956[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:39:11,956[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:40:28,073[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:40:28,073[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:40:28,073[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:40:28,073[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:40:43,211[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:40:43,211[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:40:43,212[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:40:43,212[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:40:58,335[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:40:58,335[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:40:58,335[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:40:58,335[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:41:13,483[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:41:13,483[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:41:13,484[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:41:13,484[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:41:28,632[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:41:28,632[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:41:28,632[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:41:28,632[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:41:43,755[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:41:43,755[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:41:43,756[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:41:43,756[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:41:58,895[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:41:58,895[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:41:58,896[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:41:58,896[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping
+[m[33m2026-03-22 22:42:14,031[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80
+[m[33m2026-03-22 22:42:14,031[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex e3dfc0d7e9ecd8a43f85f0b68ebf3b80, skipping
+[m[33m2026-03-22 22:42:14,031[m [36mo.a.f.a.ScalingMetricEvaluator[m [36m[DEBUG][default/flink] A4S: Evaluating metrics for vertex 29c6de9b0f6c5486908e9bb66a93ee45
+[m[33m2026-03-22 22:42:14,031[m [36mo.a.f.a.ScalingMetricEvaluator[m [33m[WARN ][default/flink] A4S: No miss rate curve found for vertex 29c6de9b0f6c5486908e9bb66a93ee45, skipping

@@ -4,3 +4,4 @@ run_id,environment,run_commit,autoscaler,storage,run_time_est
 1774197275798,k8s,fbf8bee,a4s,ssd,2026-03-22 12:34:35 EDT
 1774202463112,k8s,492fc24,justin,ssd,2026-03-22 14:01:03 EDT
 1774215720955,k8s,2862042,a4s,ssd,2026-03-22 17:42:00 EDT
+1774218524598,k8s,2b0ca80,ds2,ssd,2026-03-22 18:28:44 EDT
