@@ -1,4 +1,4 @@
-run_id,environment,run_commit,autoscaler
+run_id,environment,run_commit,autoscaler,storage
 1771906009000,kind,not-captured,a4s
 1771945914000,kind,ed674e06,a4s
 1771961564000,kind,ed674e06,justin
@@ -27,3 +27,4 @@ run_id,environment,run_commit,autoscaler
 1774032550070,k8s,4131f02,a4s
 1774117714873,k8s,7e4dd11,a4s
 1774122179944,k8s,805093c,ds2
+1774138079985,k8s,,a4s,ssd
