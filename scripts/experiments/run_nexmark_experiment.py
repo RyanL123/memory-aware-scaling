@@ -24,7 +24,7 @@ import time
 from pathlib import Path
 
 
-RUNS_HEADER = ["run_id", "environment", "run_commit", "autoscaler", "storage"]
+RUNS_HEADER = ["run_id", "environment", "run_commit", "autoscaler", "storage", "run_time_est"]
 LOGGER = logging.getLogger(__name__)
 
 
@@ -238,25 +238,55 @@ def stop_a4s_decision_collector(
         thread.join(timeout=5)
 
 
+def _run_time_est_from_run_id(run_id: str) -> str:
+    """Convert run_id (epoch ms) to Eastern Time string for tracking."""
+    try:
+        ts_ms = int(run_id)
+        utc = datetime.datetime.fromtimestamp(ts_ms / 1000.0, tz=datetime.timezone.utc)
+        try:
+            from zoneinfo import ZoneInfo
+
+            et = utc.astimezone(ZoneInfo("America/New_York"))
+        except ImportError:
+            et = utc.astimezone(datetime.timezone(datetime.timedelta(hours=-5)))
+        return et.strftime("%Y-%m-%d %H:%M:%S %Z")
+    except (ValueError, OSError):
+        return ""
+
+
 def append_run_row(runs_csv: Path, row: dict[str, str]) -> None:
     exists = runs_csv.exists()
     existing_rows: list[dict[str, str]] = []
     if exists:
         with runs_csv.open("r", encoding="utf-8", newline="") as handle:
             reader = csv.DictReader(handle)
-            if reader.fieldnames != RUNS_HEADER:
+            header = list(reader.fieldnames or [])
+            if header == RUNS_HEADER:
+                existing_rows = list(reader)
+            elif header + ["run_time_est"] == RUNS_HEADER:
+                for r in reader:
+                    r["run_time_est"] = ""
+                    existing_rows.append(r)
+                with runs_csv.open("w", encoding="utf-8", newline="") as wh:
+                    writer = csv.DictWriter(wh, fieldnames=RUNS_HEADER, extrasaction="ignore")
+                    writer.writeheader()
+                    for r in existing_rows:
+                        writer.writerow({k: r.get(k, "") for k in RUNS_HEADER})
+            else:
                 raise ValueError(
                     f"Unsupported runs.csv header in {runs_csv}. "
                     f"Expected header: {','.join(RUNS_HEADER)}."
                 )
-            existing_rows = list(reader)
         if any(r.get("run_id") == row["run_id"] for r in existing_rows):
             return
+        with runs_csv.open("a", encoding="utf-8", newline="") as handle:
+            writer = csv.DictWriter(handle, fieldnames=RUNS_HEADER, extrasaction="ignore")
+            writer.writerow(row)
+        return
 
     with runs_csv.open("a", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=RUNS_HEADER)
-        if not exists:
-            writer.writeheader()
+        writer = csv.DictWriter(handle, fieldnames=RUNS_HEADER, extrasaction="ignore")
+        writer.writeheader()
         writer.writerow(row)
 
 
@@ -271,6 +301,7 @@ def build_run_row(
         "run_commit": run_commit,
         "autoscaler": slugify(args.policy),
         "storage": slugify(args.storage),
+        "run_time_est": _run_time_est_from_run_id(run_id),
     }
 
 

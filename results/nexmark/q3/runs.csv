@@ -1,8 +1,1 @@
-run_id,environment,run_commit,autoscaler
-1771909946000,kind,not-captured,a4s
-1771950900000,kind,ed674e06,a4s
-1771953853000,kind,ed674e06,justin
-1771963945000,kind,ed674e06,justin
-1772735467910,kind,eb57dfb3,a4s
-1773148606720,kind,c1023486,a4s
-1773150988011,kind,c1023486,ds2
+run_id,environment,run_commit,autoscaler,storage,run_time_est

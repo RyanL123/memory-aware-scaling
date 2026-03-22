@@ -1,10 +1,2 @@
-run_id,environment,run_commit,autoscaler
-1771949104000,kind,ed674e06,ds2
-1771956884001,kind,ed674e06,justin
-1771965269000,kind,not-captured,justin
-1771980403338,kind,ed674e06,a4s
-1772745014488,kind,eb57dfb3,ds2
-1772746364668,kind,eb57dfb3,justin
-1773152611114,kind,c1023486,a4s
-1774040990981,k8s,4131f02,justin
-1774044316713,k8s,4131f02,justin
+run_id,environment,run_commit,autoscaler,storage,run_time_est
+1774044316713,k8s,4131f02,justin,ssd,2026-03-20 18:05:16 EDT
