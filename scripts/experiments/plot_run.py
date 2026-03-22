@@ -90,8 +90,11 @@ def run_name_from_row(run_row: dict[str, str]) -> str:
     run_id = run_row.get("run_id", "").strip()
     environment = run_row.get("environment", "").strip()
     autoscaler = run_row.get("autoscaler", "").strip()
+    storage = run_row.get("storage", "").strip()
     if not run_id or not environment or not autoscaler:
         raise ValueError("Selected runs.csv row is missing run_id/environment/autoscaler.")
+    if storage:
+        return f"{run_id}_{environment}_{autoscaler}_{storage}"
     return f"{run_id}_{environment}_{autoscaler}"
 
 
@@ -312,6 +315,14 @@ def main() -> None:
     run_name = run_name_from_row(run_row)
     run_dir = query_dir / run_name
     samples_path = run_dir / "samples.csv"
+    if not samples_path.exists():
+        for suffix in ("_ssd", "_hdd"):
+            alt_dir = query_dir / f"{run_name}{suffix}"
+            alt_samples = alt_dir / "samples.csv"
+            if alt_samples.exists():
+                run_dir = alt_dir
+                samples_path = alt_samples
+                break
     if not samples_path.exists():
         raise FileNotFoundError(f"Missing samples CSV for run: {samples_path}")
     samples = read_csv_rows(samples_path)

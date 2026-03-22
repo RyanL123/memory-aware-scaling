@@ -13,6 +13,7 @@ import json
 import logging
 import math
 import re
+import signal
 import subprocess
 import time
 import urllib.parse
@@ -275,16 +276,32 @@ def main() -> None:
     vids, source_names = get_source_vertex_ids(workspace_root, job_id)
 
     rows: list[tuple[int, float, float, float, float]] = []
-    for i in range(sample_count):
-        t0 = time.time()
-        rows.append(sample_once(workspace_root, job_id, vids, source_names))
-        if i % max(1, math.ceil(60 / args.sampling_interval_sec)) == 0:
-            LOGGER.info("Progress: sample %s/%s", i + 1, sample_count)
-        elapsed = time.time() - t0
-        time.sleep(max(0.0, args.sampling_interval_sec - elapsed))
+    interrupted = False
 
-    write_samples_csv(output_csv, rows)
-    LOGGER.info("Saved samples: %s", output_csv)
+    def handle_exit(signum: int, frame: object) -> None:
+        nonlocal interrupted
+        interrupted = True
+
+    signal.signal(signal.SIGINT, handle_exit)
+    signal.signal(signal.SIGTERM, handle_exit)
+
+    try:
+        for i in range(sample_count):
+            if interrupted:
+                break
+            t0 = time.time()
+            rows.append(sample_once(workspace_root, job_id, vids, source_names))
+            if i % max(1, math.ceil(60 / args.sampling_interval_sec)) == 0:
+                LOGGER.info("Progress: sample %s/%s", i + 1, sample_count)
+            elapsed = time.time() - t0
+            time.sleep(max(0.0, args.sampling_interval_sec - elapsed))
+    except KeyboardInterrupt:
+        interrupted = True
+        LOGGER.info("Interrupted by user")
+    finally:
+        if rows:
+            write_samples_csv(output_csv, rows)
+            LOGGER.info("Saved samples: %s (%s samples)", output_csv, len(rows))
 
 
 if __name__ == "__main__":

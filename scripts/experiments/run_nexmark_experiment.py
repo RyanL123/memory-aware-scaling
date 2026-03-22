@@ -22,7 +22,7 @@ import time
 from pathlib import Path
 
 
-RUNS_HEADER = ["run_id", "environment", "run_commit", "autoscaler"]
+RUNS_HEADER = ["run_id", "environment", "run_commit", "autoscaler", "storage"]
 LOGGER = logging.getLogger(__name__)
 
 
@@ -55,14 +55,20 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--environment",
-        default="kind",
-        help="Environment tag used in run_id and runs.csv (default: kind).",
+        default="k8s",
+        help="Environment tag used in run_id and runs.csv (default: k8s).",
     )
     parser.add_argument(
         "--policy",
+        required=True,
         choices=["ds2", "justin", "a4s"],
-        default="ds2",
-        help="Autoscaling policy and manifest suffix (default: ds2).",
+        help="Autoscaling policy and manifest suffix.",
+    )
+    parser.add_argument(
+        "--storage",
+        choices=["ssd", "hdd"],
+        default="ssd",
+        help="Storage type (default: ssd).",
     )
     parser.add_argument(
         "--results-root",
@@ -235,7 +241,7 @@ def append_run_row(runs_csv: Path, row: dict[str, str]) -> None:
             if reader.fieldnames != RUNS_HEADER:
                 raise ValueError(
                     f"Unsupported runs.csv header in {runs_csv}. "
-                    "Expected header: run_id,environment,run_commit,autoscaler."
+                    f"Expected header: {','.join(RUNS_HEADER)}."
                 )
             existing_rows = list(reader)
         if any(r.get("run_id") == row["run_id"] for r in existing_rows):
@@ -258,6 +264,7 @@ def build_run_row(
         "environment": args.environment,
         "run_commit": run_commit,
         "autoscaler": slugify(args.policy),
+        "storage": slugify(args.storage),
     }
 
 
@@ -288,7 +295,7 @@ def main() -> None:
 
     run_id = str(int(time.time() * 1000))
     autoscaler = policy
-    run_name = f"{run_id}_{slugify(args.environment)}_{slugify(autoscaler)}"
+    run_name = f"{run_id}_{slugify(args.environment)}_{slugify(autoscaler)}_{slugify(args.storage)}"
     query_dir = results_root / "nexmark" / query
     query_dir.mkdir(parents=True, exist_ok=True)
     runs_csv = query_dir / "runs.csv"
@@ -314,44 +321,55 @@ def main() -> None:
     )
     LOGGER.info("Streaming A4S decisions to: %s", decisions_log)
 
+    interrupted = False
     try:
-        shell(f"kubectl apply -f '{manifest}'", workspace_root)
-        run_sampler(
-            workspace_root=workspace_root,
-            samples_csv=samples_csv,
-            duration_sec=args.duration_sec,
-            sampling_interval_sec=args.sampling_interval_sec,
-        )
-    finally:
-        shell(f"kubectl delete -f '{manifest}'", workspace_root, check=False)
-        wait_no_deployment(workspace_root, args.cleanup_timeout_sec)
-        stop_a4s_decision_collector(collector_proc, collector_thread)
+        try:
+            shell(f"kubectl apply -f '{manifest}'", workspace_root)
+            run_sampler(
+                workspace_root=workspace_root,
+                samples_csv=samples_csv,
+                duration_sec=args.duration_sec,
+                sampling_interval_sec=args.sampling_interval_sec,
+            )
+        finally:
+            shell(f"kubectl delete -f '{manifest}'", workspace_root, check=False)
+            wait_no_deployment(workspace_root, args.cleanup_timeout_sec)
+            stop_a4s_decision_collector(collector_proc, collector_thread)
 
-    if not samples_csv.exists():
-        raise FileNotFoundError(f"Sampler did not create expected samples CSV: {samples_csv}")
+        if not samples_csv.exists():
+            raise FileNotFoundError(f"Sampler did not create expected samples CSV: {samples_csv}")
 
-    commit_out, commit_rc = shell("git rev-parse --short HEAD", workspace_root, check=False)
-    run_commit = commit_out if commit_rc == 0 and commit_out else "not-captured"
-    run_row = build_run_row(args, run_id, run_commit)
-    append_run_row(runs_csv, run_row)
+        commit_out, commit_rc = shell("git rev-parse --short HEAD", workspace_root, check=False)
+        run_commit = commit_out if commit_rc == 0 and commit_out else "not-captured"
+        run_row = build_run_row(args, run_id, run_commit)
+        append_run_row(runs_csv, run_row)
 
-    if args.plot:
-        plot_cmd = [
-            sys.executable,
-            str(Path(__file__).resolve().parent / "plot_run.py"),
-            "--query",
-            query,
-            "--run-id",
-            run_id,
-            "--results-root",
-            str(results_root),
-        ]
-        proc = subprocess.run(plot_cmd, cwd=workspace_root, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        if proc.returncode != 0:
-            LOGGER.error("Plot generation failed:")
-            LOGGER.error("%s", proc.stdout)
-            raise RuntimeError("plot_run.py failed")
-        LOGGER.info("%s", proc.stdout.strip())
+        if args.plot:
+            plot_cmd = [
+                sys.executable,
+                str(Path(__file__).resolve().parent / "plot_run.py"),
+                "--query",
+                query,
+                "--run-id",
+                run_id,
+                "--results-root",
+                str(results_root),
+            ]
+            proc = subprocess.run(plot_cmd, cwd=workspace_root, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            if proc.returncode != 0:
+                LOGGER.error("Plot generation failed:")
+                LOGGER.error("%s", proc.stdout)
+                raise RuntimeError("plot_run.py failed")
+            LOGGER.info("%s", proc.stdout.strip())
+    except KeyboardInterrupt:
+        interrupted = True
+        LOGGER.info("Interrupted by user")
+        if samples_csv.exists():
+            commit_out, commit_rc = shell("git rev-parse --short HEAD", workspace_root, check=False)
+            run_commit = commit_out if commit_rc == 0 and commit_out else "not-captured"
+            run_row = build_run_row(args, run_id, run_commit)
+            append_run_row(runs_csv, run_row)
+            LOGGER.info("Saved partial run to %s", runs_csv)
 
     if decisions_log.read_text(encoding="utf-8").strip() == "":
         decisions_log.write_text(
@@ -360,9 +378,11 @@ def main() -> None:
         )
     LOGGER.info("Saved A4S decisions: %s", decisions_log)
 
-    LOGGER.info("Saved samples: %s", samples_csv)
-    LOGGER.info("Updated runs: %s", runs_csv)
-    LOGGER.info("Run complete.")
+    if samples_csv.exists():
+        LOGGER.info("Saved samples: %s", samples_csv)
+    if runs_csv.exists():
+        LOGGER.info("Updated runs: %s", runs_csv)
+    LOGGER.info("Run complete." if not interrupted else "Run interrupted.")
 
 
 if __name__ == "__main__":
