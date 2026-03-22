@@ -2,4 +2,3 @@
 *.class
 .vscode/
 __pycache__/
-*.log
