@@ -16,6 +16,7 @@ import csv
 import datetime
 import logging
 import re
+import shutil
 import subprocess
 import sys
 import threading
@@ -307,6 +308,10 @@ def main() -> None:
     run_dir = query_dir / run_name
     run_dir.mkdir(parents=True, exist_ok=True)
     samples_csv = run_dir / "samples.csv"
+
+    manifest_copy = run_dir / manifest.name
+    shutil.copy2(manifest, manifest_copy)
+    LOGGER.info("Copied manifest to: %s", manifest_copy)
 
     LOGGER.info("Starting run_id: %s", run_id)
     LOGGER.info("Run folder: %s", run_dir)
