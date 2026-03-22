@@ -13,3 +13,8 @@ docker build \
   "${REPO_ROOT}/flink-justin/flink-kubernetes-operator"
 
 echo "Flink Kubernetes Operator image built successfully: ${OPERATOR_IMAGE}"
+
+echo "Pushing Flink Kubernetes Operator image to registry ${REGISTRY}..."
+docker push "${OPERATOR_IMAGE}"
+
+echo "Flink Kubernetes Operator image pushed to registry ${REGISTRY}"
