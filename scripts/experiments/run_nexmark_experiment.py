@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import datetime
 import logging
 import re
 import subprocess
@@ -172,16 +173,20 @@ def run_sampler(
 def start_a4s_decision_collector(
     workspace_root: Path,
     run_dir: Path,
+    since_time: datetime.datetime,
 ) -> tuple[Path, subprocess.Popen[str] | None, threading.Thread | None]:
-    """Stream operator logs and persist A4S decision lines while the run is active."""
+    """Stream operator logs and persist A4S decision lines since run start."""
     decisions_log = run_dir / "a4s_decisions.log"
     decisions_log.write_text("", encoding="utf-8")
 
+    since_rfc3339 = since_time.strftime("%Y-%m-%dT%H:%M:%SZ")
     cmd = [
         "kubectl",
         "logs",
         "deployment/flink-kubernetes-operator",
         "--all-containers",
+        "--since-time",
+        since_rfc3339,
         "-f",
     ]
     try:
@@ -315,11 +320,13 @@ def main() -> None:
     shell("kubectl delete flinkdeployment flink --ignore-not-found=true", workspace_root, check=False)
     wait_no_deployment(workspace_root, args.cleanup_timeout_sec)
 
+    run_start_time = datetime.datetime.now(datetime.timezone.utc)
     decisions_log, collector_proc, collector_thread = start_a4s_decision_collector(
         workspace_root=workspace_root,
         run_dir=run_dir,
+        since_time=run_start_time,
     )
-    LOGGER.info("Streaming A4S decisions to: %s", decisions_log)
+    LOGGER.info("Streaming A4S decisions to: %s (since %s)", decisions_log, run_start_time.isoformat())
 
     interrupted = False
     try:
