@@ -1,4 +1,4 @@
-run_id,environment,run_commit,autoscaler
+run_id,environment,run_commit,autoscaler,storage
 1773693520560,kind,d94820b,a4s
 1773695463818,kind,d94820b,ds2
 1773697676035,kind,d94820b,ds2
