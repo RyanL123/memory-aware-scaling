@@ -47,18 +47,18 @@ class PrometheusMetric(Enum):
         promql='sum(flink_taskmanager_job_task_operator_numRecordsOutPerSecond{operator_name=~"Source.*"})',
     )
     TOTAL_MANAGED_MEMORY_USED = MetricDef(
-        display_name="Total Managed Memory Used (bytes)",
-        column_name="total_managed_memory_used_bytes",
+        display_name="Total Managed Memory Used (GB)",
+        column_name="total_managed_memory_used_gb",
         y_axis_label="Managed Memory Used",
-        units="bytes",
-        promql="sum(flink_taskmanager_Status_Flink_Memory_Managed_Used)",
+        units="GB",
+        promql="sum(flink_taskmanager_Status_Flink_Memory_Managed_Used) / 1024 / 1024 / 1024",
     )
     NUM_TASK_SLOTS_USED = MetricDef(
         display_name="Num Task Slots Used",
         column_name="num_task_slots_used",
         y_axis_label="Task Slots Used",
         units="",
-        promql="flink_taskmanager_taskSlotsTotal - flink_taskmanager_taskSlotsAvailable",
+        promql="flink_jobmanager_taskSlotsTotal - flink_jobmanager_taskSlotsAvailable",
     )
     AVG_ROCKSDB_BLOCK_CACHE_HIT_RATE = MetricDef(
         display_name="Avg RocksDB Block Cache Hit Rate",

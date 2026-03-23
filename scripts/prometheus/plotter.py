@@ -109,7 +109,7 @@ def main() -> None:
 
     # Individual plots per metric
     for metric in PrometheusMetric:
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(10, 6))
         has_any = False
 
         for label in ("ds2", "justin", "a4s"):
@@ -123,7 +123,7 @@ def main() -> None:
             has_any = True
             x = np.arange(len(arr), dtype=float) * DEFAULT_STEP_SECONDS
             color = DATASET_COLORS[label]
-            ax.plot(x, arr, color=color, label=label)
+            ax.plot(x, arr, color=color, label=label, linewidth=1.5)
 
         if not has_any:
             plt.close(fig)
@@ -139,7 +139,7 @@ def main() -> None:
         filename = sanitize_filename(metric.column_name) + ".png"
         out_path = output_dir / filename
         fig.tight_layout()
-        fig.savefig(out_path, dpi=150)
+        fig.savefig(out_path, dpi=300, bbox_inches="tight")
         plt.close(fig)
         print(f"Saved {out_path}")
 
@@ -147,7 +147,7 @@ def main() -> None:
     n_metrics = len(PrometheusMetric)
     nrows = (n_metrics + 1) // 2
     ncols = 2
-    fig, axes = plt.subplots(nrows, ncols, figsize=(10, 4 * nrows))
+    fig, axes = plt.subplots(nrows, ncols, figsize=(14, 5 * nrows))
     axes = np.atleast_2d(axes)
 
     for idx, metric in enumerate(PrometheusMetric):
@@ -164,7 +164,7 @@ def main() -> None:
                 continue
             x = np.arange(len(arr), dtype=float) * DEFAULT_STEP_SECONDS
             color = DATASET_COLORS[label]
-            ax.plot(x, arr, color=color, label=label)
+            ax.plot(x, arr, color=color, label=label, linewidth=1.5)
 
         y_label = f"{metric.y_axis_label} ({metric.units})" if metric.units else metric.y_axis_label
         ax.set_xlabel("Time (seconds)")
@@ -180,7 +180,7 @@ def main() -> None:
 
     fig.tight_layout()
     agg_path = output_dir / "aggregate.png"
-    fig.savefig(agg_path, dpi=150)
+    fig.savefig(agg_path, dpi=300, bbox_inches="tight")
     plt.close(fig)
     print(f"Saved {agg_path}")
 
