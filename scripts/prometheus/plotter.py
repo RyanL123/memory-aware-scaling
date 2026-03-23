@@ -17,24 +17,9 @@ _project_root = Path(__file__).resolve().parents[2]
 if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
-from scripts.prometheus.data_retriever import (
-    AVG_ROCKSDB_BLOCK_CACHE_HIT_RATE,
-    DEFAULT_STEP_SECONDS,
-    NUM_TASK_SLOTS_USED,
-    PROMETHEUS_METRICS,
-    SOURCE_THROUGHPUT_PER_SEC,
-    TOTAL_MANAGED_MEMORY_USED_BYTES,
-)
+from scripts.prometheus.data_retriever import DEFAULT_STEP_SECONDS, PrometheusMetric
 
-# Canonical metric name -> human-readable y-axis label
-CANONICAL_TO_READABLE: dict[str, str] = {
-    SOURCE_THROUGHPUT_PER_SEC: "Source Throughput (records/sec)",
-    TOTAL_MANAGED_MEMORY_USED_BYTES: "Total Managed Memory Used (bytes)",
-    NUM_TASK_SLOTS_USED: "Num Task Slots Used",
-    AVG_ROCKSDB_BLOCK_CACHE_HIT_RATE: "Avg RocksDB Block Cache Hit Rate",
-}
-
-CANONICAL_NAMES: list[str] = [name for name, _ in PROMETHEUS_METRICS]
+CANONICAL_NAMES: list[str] = [m.column_name for m in PrometheusMetric]
 
 # Fixed colors for ds2, justin, a4s (consistent across all plots)
 DATASET_COLORS: dict[str, str] = {
@@ -114,14 +99,14 @@ def main() -> None:
     output_dir = Path(args.output)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    for canonical in CANONICAL_NAMES:
+    for metric in PrometheusMetric:
         fig, ax = plt.subplots()
         has_any = False
 
         for label in ("ds2", "justin", "a4s"):
             if label not in loaded:
                 continue
-            arr = loaded[label].get(canonical)
+            arr = loaded[label].get(metric.column_name)
             if arr is None or len(arr) == 0:
                 continue
             if not np.any(np.isfinite(arr)):
@@ -133,14 +118,14 @@ def main() -> None:
 
         if not has_any:
             plt.close(fig)
-            print(f"Skipped {canonical}: no valid data")
+            print(f"Skipped {metric.column_name}: no valid data")
             continue
 
         ax.set_xlabel("Time (seconds)")
-        ax.set_ylabel(CANONICAL_TO_READABLE.get(canonical, canonical))
+        ax.set_ylabel(metric.display_name)
         ax.legend()
-        ax.set_title(CANONICAL_TO_READABLE.get(canonical, canonical))
-        filename = sanitize_filename(canonical) + ".png"
+        ax.set_title(metric.display_name)
+        filename = sanitize_filename(metric.column_name) + ".png"
         out_path = output_dir / filename
         fig.tight_layout()
         fig.savefig(out_path, dpi=150)

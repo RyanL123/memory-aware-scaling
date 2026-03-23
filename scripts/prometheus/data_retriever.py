@@ -14,6 +14,7 @@ import logging
 import urllib.error
 import urllib.parse
 import urllib.request
+from enum import Enum
 from pathlib import Path
 
 LOGGER = logging.getLogger(__name__)
@@ -22,31 +23,43 @@ PROMETHEUS_BASE_URL = "http://localhost:30090"
 PROMETHEUS_QUERY_RANGE_PATH = "/api/v1/query_range"
 DEFAULT_STEP_SECONDS = 5
 
-SOURCE_THROUGHPUT_PER_SEC = "source_throughput_records_per_sec"
-TOTAL_MANAGED_MEMORY_USED_BYTES = "total_managed_memory_used_bytes"
-NUM_TASK_SLOTS_USED = "num_task_slots_used"
-AVG_ROCKSDB_BLOCK_CACHE_HIT_RATE = "avg_rocksdb_block_cache_hit_rate"
 
+class PrometheusMetric(Enum):
+    """Enum of Prometheus metrics with display name, CSV column name, and PromQL query."""
 
-# List of (canonical_name, promql_query) - canonical names become CSV headers
-PROMETHEUS_METRICS = [
-    (
-        SOURCE_THROUGHPUT_PER_SEC,
+    # (display_name, column_name, promql_query)
+    SOURCE_THROUGHPUT = (
+        "Source Throughput (records/sec)",
+        "source_throughput_records_per_sec",
         'sum(flink_taskmanager_job_task_operator_numRecordsOutPerSecond{operator_name=~"Source.*"})',
-    ),
-    (
-        TOTAL_MANAGED_MEMORY_USED_BYTES,
+    )
+    TOTAL_MANAGED_MEMORY_USED = (
+        "Total Managed Memory Used (bytes)",
+        "total_managed_memory_used_bytes",
         "sum(flink_taskmanager_Status_Flink_Memory_Managed_Used)",
-    ),
-    (
-        NUM_TASK_SLOTS_USED,
+    )
+    NUM_TASK_SLOTS_USED = (
+        "Num Task Slots Used",
+        "num_task_slots_used",
         "flink_taskmanager_taskSlotsTotal - flink_taskmanager_taskSlotsAvailable",
-    ),
-    (
-        AVG_ROCKSDB_BLOCK_CACHE_HIT_RATE,
+    )
+    AVG_ROCKSDB_BLOCK_CACHE_HIT_RATE = (
+        "Avg RocksDB Block Cache Hit Rate",
+        "avg_rocksdb_block_cache_hit_rate",
         "avg(rate(flink_taskmanager_job_task_operator_rocksdb_block_cache_hit[1m]) / (rate(flink_taskmanager_job_task_operator_rocksdb_block_cache_hit[1m]) + rate(flink_taskmanager_job_task_operator_rocksdb_block_cache_miss[1m])))",
-    ),
-]
+    )
+
+    @property
+    def display_name(self) -> str:
+        return self.value[0]
+
+    @property
+    def column_name(self) -> str:
+        return self.value[1]
+
+    @property
+    def promql(self) -> str:
+        return self.value[2]
 
 
 def parse_args() -> argparse.Namespace:
@@ -157,20 +170,20 @@ def main() -> None:
         output_path = Path.cwd() / f"metrics_{start_safe}_{end_safe}.csv"
 
     all_data: dict[float, dict[str, str | float]] = {}
-    canonical_names = [name for name, _ in PROMETHEUS_METRICS]
+    canonical_names = [m.column_name for m in PrometheusMetric]
 
-    for name, query in PROMETHEUS_METRICS:
-        LOGGER.info("Fetching metric: %s", name)
+    for metric in PrometheusMetric:
+        LOGGER.info("Fetching metric: %s", metric.display_name)
         values = fetch_query_range(
             PROMETHEUS_BASE_URL,
-            query,
+            metric.promql,
             str(args.start),
             str(end),
             DEFAULT_STEP_SECONDS,
         )
         for ts, val in values:
             row = all_data.setdefault(ts, {"timestamp_epoch": ts})
-            row[name] = val
+            row[metric.column_name] = val
 
     if not all_data:
         LOGGER.warning("No data retrieved from Prometheus")
