@@ -99,6 +99,14 @@ def main() -> None:
     output_dir = Path(args.output)
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    # Compute max x-axis extent (seconds) across all datasets so all plots share the same range
+    max_n = 0
+    for data in loaded.values():
+        for arr in data.values():
+            if len(arr) > max_n:
+                max_n = len(arr)
+    x_max = max_n * DEFAULT_STEP_SECONDS if max_n > 0 else 1
+
     # Individual plots per metric
     for metric in PrometheusMetric:
         fig, ax = plt.subplots()
@@ -124,6 +132,7 @@ def main() -> None:
 
         ax.set_xlabel("Time (seconds)")
         ax.set_ylabel(metric.display_name)
+        ax.set_xlim(0, x_max)
         ax.legend()
         ax.set_title(metric.display_name)
         filename = sanitize_filename(metric.column_name) + ".png"
@@ -158,6 +167,7 @@ def main() -> None:
 
         ax.set_xlabel("Time (seconds)")
         ax.set_ylabel(metric.display_name)
+        ax.set_xlim(0, x_max)
         ax.legend()
         ax.set_title(metric.display_name)
 
