@@ -14,6 +14,7 @@ import logging
 import urllib.error
 import urllib.parse
 import urllib.request
+from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 
@@ -24,42 +25,68 @@ PROMETHEUS_QUERY_RANGE_PATH = "/api/v1/query_range"
 DEFAULT_STEP_SECONDS = 5
 
 
-class PrometheusMetric(Enum):
-    """Enum of Prometheus metrics with display name, CSV column name, and PromQL query."""
+@dataclass(frozen=True)
+class MetricDef:
+    """Definition of a Prometheus metric for CSV and plotting."""
 
-    # (display_name, column_name, promql_query)
-    SOURCE_THROUGHPUT = (
-        "Source Throughput (records/sec)",
-        "source_throughput_records_per_sec",
-        'sum(flink_taskmanager_job_task_operator_numRecordsOutPerSecond{operator_name=~"Source.*"})',
+    display_name: str
+    column_name: str
+    y_axis_label: str  # Shorter label for plot y-axis
+    units: str
+    promql: str
+
+
+class PrometheusMetric(Enum):
+    """Enum of Prometheus metrics with named fields."""
+
+    SOURCE_THROUGHPUT = MetricDef(
+        display_name="Source Throughput (records/sec)",
+        column_name="source_throughput_records_per_sec",
+        y_axis_label="Source Throughput",
+        units="records/sec",
+        promql='sum(flink_taskmanager_job_task_operator_numRecordsOutPerSecond{operator_name=~"Source.*"})',
     )
-    TOTAL_MANAGED_MEMORY_USED = (
-        "Total Managed Memory Used (bytes)",
-        "total_managed_memory_used_bytes",
-        "sum(flink_taskmanager_Status_Flink_Memory_Managed_Used)",
+    TOTAL_MANAGED_MEMORY_USED = MetricDef(
+        display_name="Total Managed Memory Used (bytes)",
+        column_name="total_managed_memory_used_bytes",
+        y_axis_label="Managed Memory Used",
+        units="bytes",
+        promql="sum(flink_taskmanager_Status_Flink_Memory_Managed_Used)",
     )
-    NUM_TASK_SLOTS_USED = (
-        "Num Task Slots Used",
-        "num_task_slots_used",
-        "flink_taskmanager_taskSlotsTotal - flink_taskmanager_taskSlotsAvailable",
+    NUM_TASK_SLOTS_USED = MetricDef(
+        display_name="Num Task Slots Used",
+        column_name="num_task_slots_used",
+        y_axis_label="Task Slots Used",
+        units="",
+        promql="flink_taskmanager_taskSlotsTotal - flink_taskmanager_taskSlotsAvailable",
     )
-    AVG_ROCKSDB_BLOCK_CACHE_HIT_RATE = (
-        "Avg RocksDB Block Cache Hit Rate",
-        "avg_rocksdb_block_cache_hit_rate",
-        "avg(rate(flink_taskmanager_job_task_operator_rocksdb_block_cache_hit[1m]) / (rate(flink_taskmanager_job_task_operator_rocksdb_block_cache_hit[1m]) + rate(flink_taskmanager_job_task_operator_rocksdb_block_cache_miss[1m])))",
+    AVG_ROCKSDB_BLOCK_CACHE_HIT_RATE = MetricDef(
+        display_name="Avg RocksDB Block Cache Hit Rate",
+        column_name="avg_rocksdb_block_cache_hit_rate",
+        y_axis_label="RocksDB Cache Hit Rate",
+        units="",
+        promql="avg(rate(flink_taskmanager_job_task_operator_rocksdb_block_cache_hit[1m]) / (rate(flink_taskmanager_job_task_operator_rocksdb_block_cache_hit[1m]) + rate(flink_taskmanager_job_task_operator_rocksdb_block_cache_miss[1m])))",
     )
 
     @property
     def display_name(self) -> str:
-        return self.value[0]
+        return self.value.display_name
 
     @property
     def column_name(self) -> str:
-        return self.value[1]
+        return self.value.column_name
+
+    @property
+    def y_axis_label(self) -> str:
+        return self.value.y_axis_label
+
+    @property
+    def units(self) -> str:
+        return self.value.units
 
     @property
     def promql(self) -> str:
-        return self.value[2]
+        return self.value.promql
 
 
 def parse_args() -> argparse.Namespace:

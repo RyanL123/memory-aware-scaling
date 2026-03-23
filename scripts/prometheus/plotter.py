@@ -130,8 +130,9 @@ def main() -> None:
             print(f"Skipped {metric.column_name}: no valid data")
             continue
 
+        y_label = f"{metric.y_axis_label} ({metric.units})" if metric.units else metric.y_axis_label
         ax.set_xlabel("Time (seconds)")
-        ax.set_ylabel(metric.display_name)
+        ax.set_ylabel(y_label)
         ax.set_xlim(0, x_max)
         ax.legend()
         ax.set_title(metric.display_name)
@@ -165,8 +166,9 @@ def main() -> None:
             color = DATASET_COLORS[label]
             ax.plot(x, arr, color=color, label=label)
 
+        y_label = f"{metric.y_axis_label} ({metric.units})" if metric.units else metric.y_axis_label
         ax.set_xlabel("Time (seconds)")
-        ax.set_ylabel(metric.display_name)
+        ax.set_ylabel(y_label)
         ax.set_xlim(0, x_max)
         ax.legend()
         ax.set_title(metric.display_name)
