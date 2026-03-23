@@ -196,12 +196,14 @@ def wait_for_job_manager_pod(
     cluster_id: str = "flink",
     timeout_sec: int = 180,
 ) -> str | None:
-    """Poll until a job manager pod exists for the Flink cluster. Returns pod name or None."""
+    """Poll until a job manager pod exists and is Running. Returns pod name or None."""
     start = time.time()
     selector = f"app={cluster_id},component=jobmanager"
+    field_selector = "status.phase=Running"
     while time.time() - start < timeout_sec:
         out, code = shell(
-            f"kubectl get pods -l {selector} -o jsonpath='{{.items[0].metadata.name}}'",
+            f"kubectl get pods -l {selector} --field-selector={field_selector} "
+            f"-o jsonpath='{{.items[0].metadata.name}}'",
             workspace_root,
             check=False,
         )
