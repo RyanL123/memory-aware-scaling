@@ -140,7 +140,7 @@ def start_operator_log_streamer(
     run_dir: Path,
     since_time: datetime.datetime,
 ) -> tuple[Path, subprocess.Popen[str] | None, threading.Thread | None]:
-    """Stream operator logs to stdout and operator.log since run start."""
+    """Stream operator logs to operator.log since run start."""
     operator_log = run_dir / "operator.log"
     operator_log.write_text("", encoding="utf-8")
 
@@ -175,8 +175,6 @@ def start_operator_log_streamer(
         assert proc.stdout is not None
         with operator_log.open("a", encoding="utf-8") as op_handle:
             for line in proc.stdout:
-                sys.stdout.write(line)
-                sys.stdout.flush()
                 op_handle.write(line)
                 op_handle.flush()
 
@@ -218,7 +216,7 @@ def start_job_manager_log_streamer(
     run_dir: Path,
     pod_name: str,
 ) -> tuple[Path, subprocess.Popen[str] | None, threading.Thread | None]:
-    """Stream job manager logs to stdout and jobmanager.log."""
+    """Stream job manager logs to jobmanager.log."""
     jm_log = run_dir / "jobmanager.log"
     jm_log.write_text("", encoding="utf-8")
 
@@ -241,8 +239,6 @@ def start_job_manager_log_streamer(
         assert proc.stdout is not None
         with jm_log.open("a", encoding="utf-8") as handle:
             for line in proc.stdout:
-                sys.stdout.write(line)
-                sys.stdout.flush()
                 handle.write(line)
                 handle.flush()
 
@@ -383,7 +379,7 @@ def main() -> None:
         run_dir=run_dir,
         since_time=run_start_time,
     )
-    LOGGER.info("Streaming operator logs to stdout and %s (since %s)", operator_log, run_start_time.isoformat())
+    LOGGER.info("Streaming operator logs to %s (since %s)", operator_log, run_start_time.isoformat())
 
     jm_log: Path | None = None
     jm_proc: subprocess.Popen[str] | None = None
