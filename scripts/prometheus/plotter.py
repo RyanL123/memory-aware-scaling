@@ -99,6 +99,7 @@ def main() -> None:
     output_dir = Path(args.output)
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    # Individual plots per metric
     for metric in PrometheusMetric:
         fig, ax = plt.subplots()
         has_any = False
@@ -131,6 +132,45 @@ def main() -> None:
         fig.savefig(out_path, dpi=150)
         plt.close(fig)
         print(f"Saved {out_path}")
+
+    # Aggregate plot: 2 columns, each metric as a subplot
+    n_metrics = len(PrometheusMetric)
+    nrows = (n_metrics + 1) // 2
+    ncols = 2
+    fig, axes = plt.subplots(nrows, ncols, figsize=(10, 4 * nrows))
+    axes = np.atleast_2d(axes)
+
+    for idx, metric in enumerate(PrometheusMetric):
+        row, col = idx // ncols, idx % ncols
+        ax = axes[row, col]
+
+        for label in ("ds2", "justin", "a4s"):
+            if label not in loaded:
+                continue
+            arr = loaded[label].get(metric.column_name)
+            if arr is None or len(arr) == 0:
+                continue
+            if not np.any(np.isfinite(arr)):
+                continue
+            x = np.arange(len(arr), dtype=float) * DEFAULT_STEP_SECONDS
+            color = DATASET_COLORS[label]
+            ax.plot(x, arr, color=color, label=label)
+
+        ax.set_xlabel("Time (seconds)")
+        ax.set_ylabel(metric.display_name)
+        ax.legend()
+        ax.set_title(metric.display_name)
+
+    # Hide unused subplots
+    for idx in range(n_metrics, nrows * ncols):
+        row, col = idx // ncols, idx % ncols
+        axes[row, col].set_visible(False)
+
+    fig.tight_layout()
+    agg_path = output_dir / "aggregate.png"
+    fig.savefig(agg_path, dpi=150)
+    plt.close(fig)
+    print(f"Saved {agg_path}")
 
 
 if __name__ == "__main__":
