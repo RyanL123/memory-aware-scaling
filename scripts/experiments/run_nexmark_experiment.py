@@ -3,10 +3,10 @@
 
 This script:
 1) applies a FlinkDeployment manifest
-2) invokes sampler.py to collect samples (throughput, slots, managed memory used/total)
+2) waits for the run duration
 3) deletes the deployment
-4) appends a normalized summary row to runs.csv
-5) optionally generates a plot via plot_run.py
+4) fetches Prometheus metrics via data_retriever.py and saves as samples.csv
+5) appends a normalized summary row to runs.csv
 """
 
 from __future__ import annotations
@@ -23,37 +23,29 @@ import threading
 import time
 from pathlib import Path
 
+WORKSPACE_ROOT_DEFAULT = Path(__file__).resolve().parents[2]
+RESULTS_ROOT_DEFAULT = WORKSPACE_ROOT_DEFAULT / "results"
+
 
 RUNS_HEADER = ["run_id", "environment", "run_commit", "autoscaler", "storage", "run_time_est"]
 LOGGER = logging.getLogger(__name__)
 
 
 def parse_args() -> argparse.Namespace:
-    workspace_root_default = Path(__file__).resolve().parents[2]
-    results_root_default = workspace_root_default / "results"
-
     parser = argparse.ArgumentParser(
-        description="Run one Nexmark query benchmark and save samples, summary, and plot."
+        description="Run one Nexmark query benchmark and save samples and summary."
     )
     parser.add_argument("--query", required=True, help="Query directory name, e.g. q1, q2, q11.")
     parser.add_argument(
         "--manifest",
-        help=(
-            "Path to FlinkDeployment YAML "
-            "(default: flink-justin/notebooks/nexmark/<query>/query<num>.<policy>.yaml)."
-        ),
+        required=True,
+        help="Path to FlinkDeployment YAML.",
     )
     parser.add_argument(
         "--duration-sec",
         type=int,
         default=1800,
-        help="Total sampling duration in seconds (default: 1800).",
-    )
-    parser.add_argument(
-        "--sampling-interval-sec",
-        type=int,
-        default=5,
-        help="Sampling interval in seconds (default: 5).",
+        help="Run duration in seconds (default: 1800).",
     )
     parser.add_argument(
         "--environment",
@@ -73,29 +65,10 @@ def parse_args() -> argparse.Namespace:
         help="Storage type (default: ssd).",
     )
     parser.add_argument(
-        "--results-root",
-        default=str(results_root_default),
-        help="Path to results root (default: <workspace-root>/results).",
-    )
-    parser.add_argument(
-        "--workspace-root",
-        default=str(workspace_root_default),
-        help=(
-            "Path to workspace root containing flink-justin/ and results/ "
-            "(default: repository root)."
-        ),
-    )
-    parser.add_argument(
         "--cleanup-timeout-sec",
         type=int,
         default=240,
         help="Timeout waiting for FlinkDeployment deletion (default: 240).",
-    )
-    parser.add_argument(
-        "--plot",
-        action=argparse.BooleanOptionalAction,
-        default=True,
-        help="Generate plot after run (default: true).",
     )
     return parser.parse_args()
 
@@ -118,14 +91,6 @@ def slugify(value: str) -> str:
     return re.sub(r"[^a-zA-Z0-9._-]+", "-", value.strip()).strip("-").lower() or "run"
 
 
-def default_manifest_for_query(workspace_root: Path, query: str, policy: str) -> Path:
-    match = re.fullmatch(r"q(\d+)", query)
-    if not match:
-        raise ValueError(f"Cannot infer manifest for query '{query}'. Provide --manifest.")
-    qnum = match.group(1)
-    return workspace_root / f"flink-justin/notebooks/nexmark/{query}/query{qnum}.{policy}.yaml"
-
-
 def wait_no_deployment(workspace_root: Path, timeout_sec: int) -> None:
     start = time.time()
     while time.time() - start < timeout_sec:
@@ -136,27 +101,26 @@ def wait_no_deployment(workspace_root: Path, timeout_sec: int) -> None:
     raise TimeoutError("Timed out waiting for flinkdeployment cleanup.")
 
 
-def run_sampler(
+def run_data_retriever(
     workspace_root: Path,
     samples_csv: Path,
+    start_unix_sec: float,
     duration_sec: int,
-    sampling_interval_sec: int,
 ) -> None:
-    scripts_dir = Path(__file__).resolve().parent
-    sampler_script = scripts_dir / "sampler.py"
-    if not sampler_script.exists():
-        raise FileNotFoundError(f"Sampler script not found: {sampler_script}")
+    """Fetch Prometheus metrics for the run time range and save as CSV."""
+    scripts_dir = Path(__file__).resolve().parents[1]
+    data_retriever_script = scripts_dir / "prometheus" / "data_retriever.py"
+    if not data_retriever_script.exists():
+        raise FileNotFoundError(f"data_retriever script not found: {data_retriever_script}")
     command = [
         sys.executable,
-        str(sampler_script),
-        "--duration-sec",
+        str(data_retriever_script),
+        "--start",
+        str(start_unix_sec),
+        "--seconds",
         str(duration_sec),
-        "--sampling-interval-sec",
-        str(sampling_interval_sec),
-        "--output-csv",
+        "--output",
         str(samples_csv),
-        "--workspace-root",
-        str(workspace_root),
     ]
     proc = subprocess.run(
         command,
@@ -166,9 +130,9 @@ def run_sampler(
         stderr=subprocess.STDOUT,
     )
     if proc.stdout:
-        LOGGER.info("sampler output:\n%s", proc.stdout.strip())
+        LOGGER.info("data_retriever output:\n%s", proc.stdout.strip())
     if proc.returncode != 0:
-        raise RuntimeError("sampler.py failed")
+        raise RuntimeError("data_retriever.py failed")
 
 
 def start_a4s_decision_collector(
@@ -310,23 +274,17 @@ def main() -> None:
     args = parse_args()
     if args.duration_sec <= 0:
         raise ValueError("--duration-sec must be > 0")
-    if args.sampling_interval_sec <= 0:
-        raise ValueError("--sampling-interval-sec must be > 0")
 
-    workspace_root = Path(args.workspace_root).resolve()
+    workspace_root = WORKSPACE_ROOT_DEFAULT.resolve()
     if not workspace_root.exists():
         raise FileNotFoundError(f"Workspace root does not exist: {workspace_root}")
     flink_root = workspace_root / "flink-justin"
     if not flink_root.exists():
         raise FileNotFoundError(f"Expected flink root missing: {flink_root}")
-    results_root = Path(args.results_root).resolve()
+    results_root = RESULTS_ROOT_DEFAULT.resolve()
     query = slugify(args.query)
     policy = slugify(args.policy)
-    manifest = (
-        Path(args.manifest).resolve()
-        if args.manifest
-        else default_manifest_for_query(workspace_root, query, policy)
-    )
+    manifest = Path(args.manifest).resolve()
     if not manifest.exists():
         raise FileNotFoundError(f"Manifest not found: {manifest}")
 
@@ -347,11 +305,7 @@ def main() -> None:
     LOGGER.info("Starting run_id: %s", run_id)
     LOGGER.info("Run folder: %s", run_dir)
     LOGGER.info("Manifest: %s", manifest)
-    LOGGER.info(
-        "Sampling duration: %ss at %ss interval",
-        args.duration_sec,
-        args.sampling_interval_sec,
-    )
+    LOGGER.info("Run duration: %ss", args.duration_sec)
 
     shell("kubectl delete flinkdeployment flink --ignore-not-found=true", workspace_root, check=False)
     wait_no_deployment(workspace_root, args.cleanup_timeout_sec)
@@ -365,45 +319,31 @@ def main() -> None:
     LOGGER.info("Streaming A4S decisions to: %s (since %s)", decisions_log, run_start_time.isoformat())
 
     interrupted = False
+    run_start_unix_sec = time.time()
     try:
         try:
             shell(f"kubectl apply -f '{manifest}'", workspace_root)
-            run_sampler(
-                workspace_root=workspace_root,
-                samples_csv=samples_csv,
-                duration_sec=args.duration_sec,
-                sampling_interval_sec=args.sampling_interval_sec,
-            )
+            LOGGER.info("Waiting %ss for run...", args.duration_sec)
+            time.sleep(args.duration_sec)
         finally:
             shell(f"kubectl delete -f '{manifest}'", workspace_root, check=False)
             wait_no_deployment(workspace_root, args.cleanup_timeout_sec)
             stop_a4s_decision_collector(collector_proc, collector_thread)
 
+        run_data_retriever(
+            workspace_root=workspace_root,
+            samples_csv=samples_csv,
+            start_unix_sec=run_start_unix_sec,
+            duration_sec=args.duration_sec,
+        )
+
         if not samples_csv.exists():
-            raise FileNotFoundError(f"Sampler did not create expected samples CSV: {samples_csv}")
+            raise FileNotFoundError(f"data_retriever did not create expected samples CSV: {samples_csv}")
 
         commit_out, commit_rc = shell("git rev-parse --short HEAD", workspace_root, check=False)
         run_commit = commit_out if commit_rc == 0 and commit_out else "not-captured"
         run_row = build_run_row(args, run_id, run_commit)
         append_run_row(runs_csv, run_row)
-
-        if args.plot:
-            plot_cmd = [
-                sys.executable,
-                str(Path(__file__).resolve().parent / "plot_run.py"),
-                "--query",
-                query,
-                "--run-id",
-                run_id,
-                "--results-root",
-                str(results_root),
-            ]
-            proc = subprocess.run(plot_cmd, cwd=workspace_root, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            if proc.returncode != 0:
-                LOGGER.error("Plot generation failed:")
-                LOGGER.error("%s", proc.stdout)
-                raise RuntimeError("plot_run.py failed")
-            LOGGER.info("%s", proc.stdout.strip())
     except KeyboardInterrupt:
         interrupted = True
         LOGGER.info("Interrupted by user")
