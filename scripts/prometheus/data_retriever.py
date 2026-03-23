@@ -56,12 +56,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--start",
         required=True,
-        help="Start timestamp (Unix epoch in seconds or RFC3339).",
+        type=float,
+        help="Start timestamp (Unix epoch in seconds).",
     )
     parser.add_argument(
-        "--end",
+        "--seconds",
         required=True,
-        help="End timestamp (Unix epoch in seconds or RFC3339).",
+        type=int,
+        help="Number of seconds after start (end = start + seconds).",
     )
     parser.add_argument(
         "--output",
@@ -145,12 +147,13 @@ def main() -> None:
         format="%(asctime)s %(levelname)s %(message)s",
     )
     args = parse_args()
+    end = args.start + args.seconds
 
     if args.output:
         output_path = Path(args.output).resolve()
     else:
         start_safe = str(args.start).replace(":", "-").replace(".", "_")
-        end_safe = str(args.end).replace(":", "-").replace(".", "_")
+        end_safe = str(end).replace(":", "-").replace(".", "_")
         output_path = Path.cwd() / f"metrics_{start_safe}_{end_safe}.csv"
 
     all_data: dict[float, dict[str, str | float]] = {}
@@ -161,8 +164,8 @@ def main() -> None:
         values = fetch_query_range(
             PROMETHEUS_BASE_URL,
             query,
-            args.start,
-            args.end,
+            str(args.start),
+            str(end),
             DEFAULT_STEP_SECONDS,
         )
         for ts, val in values:
