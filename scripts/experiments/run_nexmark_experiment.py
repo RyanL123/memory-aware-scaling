@@ -190,6 +190,72 @@ def stop_operator_log_streamer(
     thread: threading.Thread | None,
 ) -> None:
     """Stop the background operator log streamer."""
+    stop_log_streamer(proc, thread)
+
+
+def wait_for_job_manager_pod(
+    workspace_root: Path,
+    cluster_id: str = "flink",
+    timeout_sec: int = 180,
+) -> str | None:
+    """Poll until a job manager pod exists for the Flink cluster. Returns pod name or None."""
+    start = time.time()
+    selector = f"app={cluster_id},component=jobmanager"
+    while time.time() - start < timeout_sec:
+        out, code = shell(
+            f"kubectl get pods -l {selector} -o jsonpath='{{.items[0].metadata.name}}'",
+            workspace_root,
+            check=False,
+        )
+        if code == 0 and out and out.strip():
+            return out.strip()
+        time.sleep(3)
+    return None
+
+
+def start_job_manager_log_streamer(
+    workspace_root: Path,
+    run_dir: Path,
+    pod_name: str,
+) -> tuple[Path, subprocess.Popen[str] | None, threading.Thread | None]:
+    """Stream job manager logs to stdout and jobmanager.log."""
+    jm_log = run_dir / "jobmanager.log"
+    jm_log.write_text("", encoding="utf-8")
+
+    cmd = ["kubectl", "logs", f"pod/{pod_name}", "--all-containers", "-f"]
+    try:
+        proc = subprocess.Popen(
+            cmd,
+            cwd=workspace_root,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            bufsize=1,
+        )
+    except Exception as exc:  # pragma: no cover - defensive
+        LOGGER.warning("Unable to start job manager log streamer: %s", exc)
+        jm_log.write_text(f"Failed to start job manager log collection: {exc}\n", encoding="utf-8")
+        return jm_log, None, None
+
+    def _consume() -> None:
+        assert proc.stdout is not None
+        with jm_log.open("a", encoding="utf-8") as handle:
+            for line in proc.stdout:
+                sys.stdout.write(line)
+                sys.stdout.flush()
+                handle.write(line)
+                handle.flush()
+
+    thread = threading.Thread(target=_consume, name="jobmanager-log-streamer", daemon=True)
+    thread.start()
+    return jm_log, proc, thread
+
+
+def stop_log_streamer(
+    proc: subprocess.Popen[str] | None,
+    thread: threading.Thread | None,
+) -> None:
+    """Stop a background log streamer (operator or job manager)."""
     if proc is None:
         return
     if proc.poll() is None:
@@ -319,17 +385,42 @@ def main() -> None:
     )
     LOGGER.info("Streaming operator logs to stdout and %s (since %s)", operator_log, run_start_time.isoformat())
 
+    jm_log: Path | None = None
+    jm_proc: subprocess.Popen[str] | None = None
+    jm_thread: threading.Thread | None = None
+
+    def _discover_and_stream_job_manager() -> None:
+        nonlocal jm_log, jm_proc, jm_thread
+        pod_name = wait_for_job_manager_pod(workspace_root, cluster_id="flink", timeout_sec=180)
+        if pod_name:
+            LOGGER.info("Found job manager pod %s, streaming logs to jobmanager.log", pod_name)
+            jm_log, jm_proc, jm_thread = start_job_manager_log_streamer(
+                workspace_root=workspace_root,
+                run_dir=run_dir,
+                pod_name=pod_name,
+            )
+        else:
+            LOGGER.warning("Job manager pod not found within timeout; skipping jobmanager log stream")
+
+    jm_discovery_thread = threading.Thread(
+        target=_discover_and_stream_job_manager,
+        name="jm-discovery-streamer",
+        daemon=True,
+    )
+
     interrupted = False
     run_start_unix_sec = time.time()
     try:
         try:
             shell(f"kubectl apply -f '{manifest}'", workspace_root)
+            jm_discovery_thread.start()
             LOGGER.info("Waiting %ss for run...", args.duration_sec)
             time.sleep(args.duration_sec)
         finally:
             shell(f"kubectl delete -f '{manifest}'", workspace_root, check=False)
             wait_no_deployment(workspace_root, args.cleanup_timeout_sec)
             stop_operator_log_streamer(collector_proc, collector_thread)
+            stop_log_streamer(jm_proc, jm_thread)
 
         run_data_retriever(
             workspace_root=workspace_root,
@@ -355,7 +446,10 @@ def main() -> None:
             append_run_row(runs_csv, run_row)
             LOGGER.info("Saved partial run to %s", runs_csv)
 
-    LOGGER.info("Saved operator logs: %s", operator_log)
+    if jm_log and jm_log.exists():
+        LOGGER.info("Saved operator logs: %s; job manager logs: %s", operator_log, jm_log)
+    else:
+        LOGGER.info("Saved operator logs: %s", operator_log)
 
     if samples_csv.exists():
         LOGGER.info("Saved samples: %s", samples_csv)
