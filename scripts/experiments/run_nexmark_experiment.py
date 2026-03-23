@@ -135,14 +135,14 @@ def run_data_retriever(
         raise RuntimeError("data_retriever.py failed")
 
 
-def start_a4s_decision_collector(
+def start_operator_log_streamer(
     workspace_root: Path,
     run_dir: Path,
     since_time: datetime.datetime,
 ) -> tuple[Path, subprocess.Popen[str] | None, threading.Thread | None]:
-    """Stream operator logs and persist A4S decision lines since run start."""
-    decisions_log = run_dir / "a4s_decisions.log"
-    decisions_log.write_text("", encoding="utf-8")
+    """Stream operator logs to stdout and operator.log since run start."""
+    operator_log = run_dir / "operator.log"
+    operator_log.write_text("", encoding="utf-8")
 
     since_rfc3339 = since_time.strftime("%Y-%m-%dT%H:%M:%SZ")
     cmd = [
@@ -164,31 +164,32 @@ def start_a4s_decision_collector(
             bufsize=1,
         )
     except Exception as exc:  # pragma: no cover - defensive
-        LOGGER.warning("Unable to start A4S decision collector: %s", exc)
-        decisions_log.write_text(
+        LOGGER.warning("Unable to start operator log streamer: %s", exc)
+        operator_log.write_text(
             "Failed to start live operator log collection.\n",
             encoding="utf-8",
         )
-        return decisions_log, None, None
+        return operator_log, None, None
 
     def _consume() -> None:
         assert proc.stdout is not None
-        with decisions_log.open("a", encoding="utf-8") as handle:
+        with operator_log.open("a", encoding="utf-8") as op_handle:
             for line in proc.stdout:
-                if "A4S:" in line:
-                    handle.write(line)
-                    handle.flush()
+                sys.stdout.write(line)
+                sys.stdout.flush()
+                op_handle.write(line)
+                op_handle.flush()
 
-    thread = threading.Thread(target=_consume, name="a4s-decision-collector", daemon=True)
+    thread = threading.Thread(target=_consume, name="operator-log-streamer", daemon=True)
     thread.start()
-    return decisions_log, proc, thread
+    return operator_log, proc, thread
 
 
-def stop_a4s_decision_collector(
+def stop_operator_log_streamer(
     proc: subprocess.Popen[str] | None,
     thread: threading.Thread | None,
 ) -> None:
-    """Stop the background A4S decision collector."""
+    """Stop the background operator log streamer."""
     if proc is None:
         return
     if proc.poll() is None:
@@ -311,12 +312,12 @@ def main() -> None:
     wait_no_deployment(workspace_root, args.cleanup_timeout_sec)
 
     run_start_time = datetime.datetime.now(datetime.timezone.utc)
-    decisions_log, collector_proc, collector_thread = start_a4s_decision_collector(
+    operator_log, collector_proc, collector_thread = start_operator_log_streamer(
         workspace_root=workspace_root,
         run_dir=run_dir,
         since_time=run_start_time,
     )
-    LOGGER.info("Streaming A4S decisions to: %s (since %s)", decisions_log, run_start_time.isoformat())
+    LOGGER.info("Streaming operator logs to stdout and %s (since %s)", operator_log, run_start_time.isoformat())
 
     interrupted = False
     run_start_unix_sec = time.time()
@@ -328,7 +329,7 @@ def main() -> None:
         finally:
             shell(f"kubectl delete -f '{manifest}'", workspace_root, check=False)
             wait_no_deployment(workspace_root, args.cleanup_timeout_sec)
-            stop_a4s_decision_collector(collector_proc, collector_thread)
+            stop_operator_log_streamer(collector_proc, collector_thread)
 
         run_data_retriever(
             workspace_root=workspace_root,
@@ -354,12 +355,7 @@ def main() -> None:
             append_run_row(runs_csv, run_row)
             LOGGER.info("Saved partial run to %s", runs_csv)
 
-    if decisions_log.read_text(encoding="utf-8").strip() == "":
-        decisions_log.write_text(
-            "No A4S [Decision]: lines captured during the run.\n",
-            encoding="utf-8",
-        )
-    LOGGER.info("Saved A4S decisions: %s", decisions_log)
+    LOGGER.info("Saved operator logs: %s", operator_log)
 
     if samples_csv.exists():
         LOGGER.info("Saved samples: %s", samples_csv)
