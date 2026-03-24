@@ -118,12 +118,31 @@ if [[ "$KEEP_DB" -eq 0 ]]; then
 fi
 
 echo
-echo "Step 1/2: Generating block cache trace via db_bench..."
+echo "Step 1/3: Loading DB (no tracing)..."
 "$DB_BENCH_BIN" \
-  --benchmarks=fillrandom,readrandomwriterandom \
+  --benchmarks=fillrandom \
   --db="$DB_PATH" \
   --use_existing_db=0 \
   --num="$NUM" \
+  --threads="$THREADS" \
+  --key_size="$KEY_SIZE" \
+  --value_size="$VALUE_SIZE" \
+  --value_size_distribution_type=fixed \
+  --block_size=4096 \
+  --cache_size="$CACHE_SIZE_BYTES" \
+  --cache_index_and_filter_blocks=1 \
+  --partition_index_and_filters=1 \
+  --pin_l0_filter_and_index_blocks_in_cache=1 \
+  --bloom_bits=10 \
+  --statistics=1 \
+  --stats_level=3
+
+echo
+echo "Step 2/3: Running mixed workload with block-cache tracing..."
+"$DB_BENCH_BIN" \
+  --benchmarks=readrandomwriterandom \
+  --db="$DB_PATH" \
+  --use_existing_db=1 \
   --threads="$THREADS" \
   --duration="$DURATION_SEC" \
   --key_size="$KEY_SIZE" \
@@ -143,7 +162,7 @@ echo "Step 1/2: Generating block cache trace via db_bench..."
   --block_cache_trace_max_trace_file_size_in_bytes="$TRACE_MAX_SIZE_BYTES"
 
 echo
-echo "Step 2/2: Running quickmrc_benchmark on trace..."
+echo "Step 3/3: Running quickmrc_benchmark on trace..."
 "$QUICKMRC_BIN" \
   --block_cache_trace_file="$TRACE_FILE" \
   --trace_data_blocks_only="$TRACE_DATA_BLOCKS_ONLY" \
@@ -160,6 +179,6 @@ echo "Done."
 echo "Trace file:"
 echo "  $TRACE_FILE"
 echo "QuickMRC outputs:"
-echo "  ${OUTPUT_DIR}/${  }_mrc_comparison.csv"
+echo "  ${OUTPUT_DIR}/${FINAL_PREFIX}_mrc_comparison.csv"
 echo "  ${OUTPUT_DIR}/${FINAL_PREFIX}_quickmrc_histogram.csv"
 echo "  ${OUTPUT_DIR}/${FINAL_PREFIX}_run_config.json"
