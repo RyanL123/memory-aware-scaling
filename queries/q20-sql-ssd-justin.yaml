@@ -124,8 +124,6 @@ spec:
     - q20
     - --tps
     - '50000'
-    - --events
-    - '12500000'
     - --max-emit-speed
     - 'false'
     - --prob-delayed-event
