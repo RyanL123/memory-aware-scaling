@@ -16,7 +16,7 @@ This folder contains various Python and Shell scripts to conveniently interact w
 
 The scripts folder is laid out as such:
 - **cluster/**: Interacting with the K8s cluster.
-- **experiements/**: Run Nexmark queries, sample metrics, plotting results.
+- **experiments/**: Run Nexmark queries, sample metrics, plotting results.
 - **flink-justin/**: Build flink/operator images from `flink-justin/` and pushing them to the local registry.
 - **rocksdb/**: Building rocksdb runtime and generating JNIs.
 
