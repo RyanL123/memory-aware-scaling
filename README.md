@@ -19,6 +19,7 @@ The scripts folder is laid out as such:
 - **experiments/**: Run Nexmark queries, sample metrics, plotting results.
 - **flink-justin/**: Build flink/operator images from `flink-justin/` and pushing them to the local registry.
 - **rocksdb/**: Building rocksdb runtime and generating JNIs.
+- **prometheus/**: Scraping and plotting metrics from the Prometheus server for past experiments. Data is kept for 15 days.
 
 ## Queries 
 
