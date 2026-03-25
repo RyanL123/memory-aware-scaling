@@ -1,38 +1,85 @@
 # Memory Aware Scaling
 
-This repository contains artifacts used to implement the A4S autoscaler as described in the paper "A4S: Co-designing Scaling and Placement in Stream Processing Systems with Memory-parallelism Curves" by Kexiang Wang.
+## Overview
 
-The A4S logic is currently implemented on top of artifacts from Flink Justin, as described in the paper "Justin: Hybrid CPU/Memory Elastic Scaling for Distributed Stream Processing" by Donatien Schmitz et al.
+This repository contains artifacts and code used to evaluate **memory-aware scaling** for stateful stream processing, centered around the **A4S** autoscaling policy and an experimental harness based on **Nexmark** workloads.
 
-Quickmrc for sampling stack distance histograms is implemented in a custom fork of RocksDB 6.23.0. This was done from scratch and does not rely on Flink Justin.
+At a high level, this codebase combines:
+- A research autoscaler stack built on top of the **Justin** artifacts (“Justin: Hybrid CPU/Memory Elastic Scaling for Distributed Stream Processing”, Donatien Schmitz et al.).
+- The A4S scaling algorithm (“A4S: Co-designing Scaling and Placement in Stream Processing Systems with Memory-parallelism Curves”, Kexiang Wang).
+- A custom RocksDB fork used for cache/miss-rate-curve and histogram-related support needed for A4S.
 
-Benchmarking is done through the use of Nexmark queries. Some Nexmark binaries are taken from those used in Flink Justin while others are newly built and wrappers on top of Flink SQL queries within the official Nexmark repository.
+## Repository map
 
-## Scripts
+- `scripts/`: helper scripts for building images, interacting with clusters, running experiments, and collecting/plotting results.
+- `queries/`: Kubernetes resource definitions for running Nexmark queries against the custom runtime.
+- `results/`: experiment outputs produced by the harness scripts. Includes ground truth data and generated plots.
+- `flink-justin/`: the main forked stack (Flink runtime + operator + benchmark harness) from the Justin paper. A4S is implemented on top of this fork at the moment.
+- `frocksdb/`: the RocksDB fork used by this project (version 6.20.3)
 
-This folder contains various Python and Shell scripts to conveniently interact with the cluster.This includes building images, running experiments, and collecting results. All shell scripts rely on `env.sh` for variable definitions. 
+## Dependencies
+- **Environment**: This project was developed on the `fs.csl.utoronto.ca` servers on Ubuntu 24.04.3 LTS.
+- **flink-justin**: Forks Flink Kubernetes Operator 1.13 and Flink Runtime 1.18. Both require Java 11.
+- **frocksdb**: Forks version 6.20.3. Requires GCC >= 4.8 and C++11.
+- Docker
+- Kubernetes
 
-> When running the Python scripts, make sure they're ran in a shell after sourcing `env.sh` so the Kubernetes control plane can be correctly located.
+## Workflow
+### 1. Set up a Kubernetes Cluster
 
-The scripts folder is laid out as such:
-- **cluster/**: Interacting with the K8s cluster.
-- **experiments/**: Run Nexmark queries, sample metrics, plotting results.
-- **flink-justin/**: Build flink/operator images from `flink-justin/` and pushing them to the local registry.
-- **rocksdb/**: Building rocksdb runtime and generating JNIs.
-- **prometheus/**: Scraping and plotting metrics from the Prometheus server for past experiments. Data is kept for 15 days.
+See https://kubernetes.io/docs/setup/ to set up a cluster. Alternatively, set up a cluster via Kind.
 
-## Queries 
+After setting up the cluster, update relevant variables in `scripts/env.sh` to point to the control plane.
 
-The queries folder contains resource definitions for various Nexmark queries. These use the custom flink runtime that has the custom Nexmark jar embedded into it and a custom query loader that generates queries via Flink's Table API from the SQL queries
+### 2. Build the RocksDB
 
-Queries with `ssd` in the name mounts the SSD drive on the machine as a volume for the RocksDB state backend. Otherwise, RocksDB will use whatever drive the container is running on.
+```bash
+./scripts/rocksdb/build_rocks_java.sh
+```
 
-## Results
+The resulting JAR will be copied into `flink-justin/custom-libs/`
 
-The `scripts/experiments/run_nexmark_experiment.py` script stores run results here. Runs are grouped by their queries and sorted monotonically increasing by when they're started (via unix epoch time).
+### 3. Build the Flink Kubernetes Operator and Flink Runtime
 
-Each run keeps track of the following data:
-- **samples.csv**: Ground truth data of metrics scraped directly from the Flink's Metrics API
-- **plot.png**: Plot of ground truth data in `samples.csv`.
-- **a4s_decisions.log**: A4S logs fetched from the operator during the run. This is done by grepping all logs since the start of the run with "A4S:" in the prefix. This file will be empty if A4S is not enabled.
-- **`<manifest>.yaml`**: Snapshot of theResource Definition used to run the experiment. 
+**Build the Flink Kubernetes Operator:**
+```bash
+./scripts/flink-justin/build_flink_k8s_operator.sh
+```
+Expect this to take around 4-5 minutes. The image size should be a few hundred MB.
+
+**Build the Flink Runtime:**
+```bash
+./scripts/flink-justin/build_flink_justin.sh
+```
+Expect this to take at least 15-20 minutes. The image size should be around 4 GB.
+
+### 4. Deploy the Flink Kubernetes Operator
+Ensure `scripts/env.sh` is pointing to the correct cluster.
+```bash
+./scripts/cluster/install_operator.sh
+```
+
+### 5. Submit workloads
+Manually submitting workloads:
+```bash
+kubectl apply -f queries/<query>.yaml
+```
+Note this will not automatically capture results
+
+Via Python Script:
+```bash
+python scripts/run_nexmark_experiment.py --query=q8 --manifest=queries/<query>.yaml --policy=a4s --duration-sec=1800
+```
+This will:
+- Automatically run the query for the specified duration and tear it down after
+- Collect Operator and Job Manager logs during the run 
+- After the run finishes, query the Prometheus server for metrics and save it to the run
+- Record the run in `results/`
+
+
+### 6. Getting results
+If step 5 was ran via the Python script, results should automatically be available under `results/nexmark/`. 
+
+## Related Documentation
+- [`scripts/README.md`](scripts/README.md)
+- [`results/README.md`](results/README.md)
