@@ -1,0 +1,53 @@
+jobmanager.memory.flink.size: 2048m
+pipeline.max-parallelism: 24
+
+taskmanager.numberOfTaskSlots: 4
+taskmanager.memory.managed.fraction: 0.4
+taskmanager.cpu.cores: 4
+taskmanager.memory.process.size: 4096m  
+
+execution.checkpointing.interval: 300m
+state.checkpoints.dir: file:///mnt/experiments/autoscaling-experiments/flink-state/checkpoints
+execution.checkpointing.savepoint-dir: file:///mnt/experiments/autoscaling-experiments/flink-state/savepoints
+execution.checkpointing.incremental: true
+execution.checkpointing.mode: EXACTLY_ONCE
+execution.checkpointing.externalized-checkpoint-retention: RETAIN_ON_CANCELLATION
+
+
+jobmanager.scheduler: adaptive
+metrics.reporters: prom
+metrics.reporter.prom.factory.class: org.apache.flink.metrics.prometheus.PrometheusReporterFactory
+web.submit.enable: true
+web.cancel.enable: true
+
+state.backend: rocksdb
+state.backend.local-recovery: true
+state.backend.rocksdb.metrics.block-cache-usage: true
+state.backend.rocksdb.metrics.block-cache-hit: true
+state.backend.rocksdb.metrics.block-cache-miss: true
+state.backend.rocksdb.metrics.bytes-read: true
+state.backend.rocksdb.metrics.bytes-written: true
+state.backend.rocksdb.metrics.column-family-as-variable: true
+state.backend.rocksdb.metrics.compaction-pending: true
+state.backend.rocksdb.metrics.compaction-read-bytes: true
+state.backend.rocksdb.metrics.compaction-write-bytes: true
+state.backend.rocksdb.metrics.cur-size-active-mem-table: true
+state.backend.rocksdb.metrics.cur-size-all-mem-tables: true
+state.backend.rocksdb.metrics.estimate-live-data-size: true
+state.backend.rocksdb.metrics.estimate-num-keys: true
+state.backend.rocksdb.metrics.estimate-pending-compaction-bytes: true
+state.backend.rocksdb.metrics.estimate-table-readers-mem: true
+state.backend.rocksdb.metrics.live-sst-files-size: true
+state.backend.rocksdb.metrics.size-all-mem-tables: true
+state.backend.rocksdb.metrics.total-sst-files-size: true
+state.backend.latency-track.keyed-state-enabled: true
+state.backend.rocksdb.use-direct-writes: true
+state.backend.rocksdb.use-direct-reads: true
+state.backend.rocksdb.localdir: /data/flink/rocksdb
+
+state.backend.rocksdb.metrics.stack-distance-histogram: true
+state.backend.rocksdb.a4s.quick-mrc.ghost-cache-multiplier: 64
+state.backend.rocksdb.a4s.quick-mrc.sampling-rate: 0.5
+state.backend.rocksdb.memory.lru-cache-num-shard-bits: 0
+state.backend.rocksdb.a4s.quick-mrc.histogram-bin-size: 1024
+a4s.bucket-size-scaling: 1024
