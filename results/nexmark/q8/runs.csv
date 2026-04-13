@@ -12,3 +12,5 @@ run_id,environment,run_commit,autoscaler,storage,run_time_est
 1774296957612,k8s,5686f5e,justin,ssd,2026-03-23 16:15:57 EDT
 1774298902747,k8s,5686f5e,ds2,ssd,2026-03-23 16:48:22 EDT
 1774301828416,k8s,7f9e73a,a4s,ssd,2026-03-23 17:37:08 EDT
+1774365897128,k8s,70c6acf,a4s,ssd,2026-03-24 11:24:57 EDT
+1774367913653,k8s,70c6acf,a4s,ssd,2026-03-24 11:58:33 EDT
