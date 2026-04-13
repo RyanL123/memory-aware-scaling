@@ -8,7 +8,6 @@ FLINK_DIST_TARGET="${REPO_ROOT}/flink-justin/flink/build-target/bin"
 export FLINK_CONF_DIR=./configs/
 
 "${FLINK_DIST_TARGET}/flink" run \
-    --target local \
     -c com.github.nexmark.flink.sql.SqlQueryJob \
     -p 1 \
     ./flink-justin/nexmark-flink-0.3-SNAPSHOT.jar \
