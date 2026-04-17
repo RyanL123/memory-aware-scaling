@@ -1,4 +1,6 @@
+taskmanager.bind-host: localhost
 jobmanager.memory.flink.size: 2048m
+jobmanager.rpc.address: localhost
 pipeline.max-parallelism: 24
 
 taskmanager.numberOfTaskSlots: 4
